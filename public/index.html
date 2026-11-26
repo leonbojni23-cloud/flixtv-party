@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09090d">
+  <title>FLIXTV Party</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar"><a class="brand" href="/">FLIX<span>TV</span><i> PARTY</i></a><span class="live"><b></b> REAL-TIME ROOMS</span></header>
+    <section class="intro">
+      <div class="eyebrow">WATCH TOGETHER</div>
+      <h1>Filmat janë më të mirë<br><em>kur i shihni bashkë.</em></h1>
+      <p>Krijo një dhomë private, dërgo ftesën dhe shikoni në sinkronizim.</p>
+    </section>
+    <section class="card" id="create-card">
+      <div class="card-heading"><div><span class="step">01 / DHOMA E RE</span><h2>Krijo Watch Party</h2></div><div class="icon">▶</div></div>
+      <form id="create-form">
+        <label>Emri yt<input id="username" maxlength="32" placeholder="p.sh. Leon" autocomplete="nickname" required></label>
+        <label>Emri i dhomës <small>Opsionale</small><input id="room-name" maxlength="60" placeholder="Movie Night"></label>
+        <div class="field-row">
+          <label class="grow">Filmi ose seriali<input id="movie-title" maxlength="160" placeholder="The Dark Knight" required></label>
+          <label class="type-field">Lloji<select id="movie-type"><option value="movie">Film</option><option value="tv">Serial</option></select></label>
+        </div>
+        <label>ID e TMDB <small>Opsionale</small><input id="movie-id" maxlength="80" placeholder="p.sh. 155"></label>
+        <div class="privacy"><div><strong>Dhoma private</strong><span>Vetëm personat me kod ftese mund të hyjnë.</span></div><label class="switch"><input id="private-room" type="checkbox" checked><span></span></label></div>
+        <button class="primary" id="create-button" type="submit">Krijo dhomën <span>↗</span></button>
+        <p class="error" id="error" role="alert"></p>
+      </form>
+    </section>
+    <section class="result hidden" id="result" aria-live="polite">
+      <div class="success-mark">✓</div><div class="step">02 / GATI PËR FILM</div><h2>Dhomën e krijuam.</h2>
+      <p class="muted">Dërgo ftesën te miqtë. Mbaje kodin e host-it privat.</p>
+      <div class="room-info"><span>DHOMA</span><strong id="result-room-name"></strong><small id="result-movie"></small></div>
+      <div class="invite-grid">
+        <div class="invite-box"><span>KODI I FTESËS</span><strong id="invite-code">—</strong></div>
+        <div class="invite-box"><span>STATUSI</span><strong id="connection-status">Duke u lidhur…</strong></div>
+      </div>
+      <button class="primary" id="copy-invite" type="button">Kopjo linkun e ftesës <span>⧉</span></button>
+      <button class="secondary" id="copy-code" type="button">Kopjo vetëm kodin</button>
+      <p class="notice">Mos e shpërnda host token-in. Ai të jep kontrollin e dhomës.</p>
+      <button class="text-button" id="new-room" type="button">＋ Krijo një dhomë tjetër</button>
+    </section>
+    <section class="join-card hidden" id="join-card">
+      <div class="step">FTESË WATCH PARTY</div><h2>Je ftuar në një dhomë.</h2>
+      <p class="muted" id="join-description">Vendos emrin për t'u bashkuar.</p>
+      <label>Emri yt<input id="join-username" maxlength="32" placeholder="Emri yt" required></label>
+      <button class="primary" id="join-button" type="button">Bashkohu në dhomë <span>↗</span></button>
+      <p class="error" id="join-error" role="alert"></p>
+      <div class="join-status" id="join-status"></div>
+    </section>
+    <footer><span>FLIXTV PARTY</span><span>Një dhomë. Një film. Të gjithë në sinkron.</span></footer>
+  </main>
+</body>
+</html>

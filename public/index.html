@@ -32,6 +32,15 @@
         <p class="error" id="error" role="alert"></p>
       </form>
     </section>
+    <section class="join-card join-code-card" id="join-code-card">
+      <div class="step">KE NJË KOD FTese?</div><h2>Bashkohu në një dhomë</h2>
+      <p class="muted">Vendos kodin që të dërgoi shoku dhe hyr direkt në Watch Party.</p>
+      <label>Emri yt<input id="code-username" maxlength="32" placeholder="Emri yt" autocomplete="nickname"></label>
+      <label>Kodi i ftesës<input id="invite-code-input" maxlength="32" placeholder="p.sh. A1B2C3" autocapitalize="characters" autocomplete="one-time-code"></label>
+      <button class="primary" id="join-by-code" type="button">Bashkohu me kod <span>↗</span></button>
+      <p class="error" id="code-error" role="alert"></p>
+      <div class="join-status" id="code-status"></div>
+    </section>
     <section class="result hidden" id="result" aria-live="polite">
       <div class="success-mark">✓</div><div class="step">02 / GATI PËR FILM</div><h2>Dhomën e krijuam.</h2>
       <p class="muted">Dërgo ftesën te miqtë. Mbaje kodin e host-it privat.</p>

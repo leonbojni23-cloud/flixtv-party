@@ -37,16 +37,11 @@ $('create-form').addEventListener('submit', async (event) => {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Krijimi i dhomës dështoi.');
     currentRoom = {...data, username};
-    $('result-room-name').textContent = data.room.name;
-    $('result-movie').textContent = movieTitle + (data.room.visibility==='private'?' · Private':' · Public');
-    $('invite-code').textContent = data.inviteCode || 'DHOMË PUBLIKE';
-    inviteLink = location.origin + '/?room=' + encodeURIComponent(data.room.id) + (data.inviteCode?'&code='+encodeURIComponent(data.inviteCode):'');
-    $('create-card').classList.add('hidden');
-    $('result').classList.remove('hidden');
-    $('connection-status').textContent = 'Duke u lidhur…';
-    try { await connectToRoom({roomId:data.room.id,username,inviteCode:data.inviteCode,hostToken:data.hostToken,isHost:true}); $('connection-status').textContent='Host · Online'; }
-    catch(error) { $('connection-status').textContent='Dhoma u krijua'; showError('error',error.message); }
-    $('result').scrollIntoView({behavior:'smooth',block:'start'});
+    const roomSession = {roomId:data.room.id,username,inviteCode:data.inviteCode || '',hostToken:data.hostToken};
+    sessionStorage.setItem('flixtv-party-session',JSON.stringify(roomSession));
+    inviteLink = location.origin + '/party/' + encodeURIComponent(data.room.id) + (data.inviteCode?'?code='+encodeURIComponent(data.inviteCode):'');
+    location.href = '/party/' + encodeURIComponent(data.room.id) + (data.inviteCode?'?code='+encodeURIComponent(data.inviteCode):'');
+    return;
   } catch(error) { showError('error',error.message); }
   finally { button.disabled=false; button.innerHTML='Krijo dhomën <span>↗</span>'; }
 });
@@ -65,7 +60,7 @@ $('join-by-code').addEventListener('click', async () => {
   $('code-status').textContent = '';
   const button = $('join-by-code');
   const username = $('code-username').value.trim();
-  const code = $('invite-code-input').value.trim().toUpperCase().replace(/\\s+/g, '');
+  const code = $('invite-code-input').value.trim().toUpperCase().replace(/\s+/g, '');
   if (!username) return showError('code-error', 'Shkruaj emrin tënd.');
   if (!code) return showError('code-error', 'Shkruaj kodin e ftesës.');
   button.disabled = true;
@@ -75,9 +70,9 @@ $('join-by-code').addEventListener('click', async () => {
     const data = await response.json();
     if (!response.ok) throw new Error(response.status === 404 ? 'Kodi nuk është i saktë ose dhoma ka skaduar.' : 'Nuk u gjet dhoma. Provo përsëri.');
     $('code-status').textContent = 'Dhoma u gjet: ' + data.room.name + ' · ' + data.room.movie.title;
-    await connectToRoom({ roomId: data.room.id, username, inviteCode: code });
-    $('code-status').textContent = 'U bashkove me sukses në dhomën "' + data.room.name + '". Lidhja është aktive.';
-    button.textContent = 'U bashkove ✓';
+    sessionStorage.setItem('flixtv-party-session',JSON.stringify({roomId:data.room.id,username,inviteCode:code}));
+    location.href = '/party/' + encodeURIComponent(data.room.id) + '?code=' + encodeURIComponent(code);
+    return;
   } catch (error) {
     showError('code-error', error.message || 'Nuk u arrit bashkimi në dhomë.');
     button.disabled = false;
@@ -96,7 +91,7 @@ if(roomId){
     showError('join-error','');const button=$('join-button');const username=$('join-username').value.trim();
     if(!username)return showError('join-error','Shkruaj emrin tënd.');
     button.disabled=true;button.textContent='Duke u bashkuar…';
-    try{await connectToRoom({roomId,username,inviteCode:params.get('code')||undefined});$('join-status').textContent='U bashkove me sukses në dhomë. Lidhja është aktive.';button.textContent='U bashkove ✓';}
+    try{await connectToRoom({roomId,username,inviteCode:params.get('code')||undefined});sessionStorage.setItem('flixtv-party-session',JSON.stringify({roomId,username,inviteCode:params.get('code')||''}));location.href='/party/'+encodeURIComponent(roomId)+(params.get('code')?'?code='+encodeURIComponent(params.get('code')):'');}
     catch(error){showError('join-error',error.message);button.disabled=false;button.innerHTML='Bashkohu në dhomë <span>↗</span>';}
   });
 }

@@ -168,6 +168,16 @@ app.post('/api/rooms', (req, res) => {
   });
 });
 
+app.get('/api/rooms/by-code/:code', (req, res) => {
+  const code = cleanText(req.params.code, 32).toUpperCase();
+  if (!code) return res.status(400).json({ error: 'INVALID_INVITE_CODE' });
+  const room = [...rooms.values()].find((candidate) =>
+    candidate.visibility === 'private' && safeEqual(hashToken(code), candidate.inviteCodeHash)
+  );
+  if (!room) return res.status(404).json({ error: 'INVALID_INVITE_CODE' });
+  res.json({ room: publicRoom(room) });
+});
+
 app.get('/api/rooms/:id', (req, res) => {
   const room = getRoom(req, res);
   if (!room) return;

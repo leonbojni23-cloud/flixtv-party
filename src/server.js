@@ -247,7 +247,7 @@ io.on('connection', (socket) => {
     let parsed;
     try { parsed = new URL(url); } catch { return ack({ ok: false, error: 'INVALID_MEDIA_URL' }); }
     if (parsed.protocol !== 'https:') return ack({ ok: false, error: 'HTTPS_REQUIRED' });
-    if (!/\\.(m3u8|mp4|webm)(?:$|\\?)/i.test(parsed.pathname + parsed.search)) {
+    if (!/\.(m3u8|mp4|webm)(?:$|\?)/i.test(parsed.pathname + parsed.search)) {
       return ack({ ok: false, error: 'UNSUPPORTED_MEDIA_FORMAT' });
     }
     room.media = { url, updatedAt: now(), updatedBy: member.userId };

@@ -233,6 +233,7 @@
     else video.pause();
   });
   video.addEventListener('loadedmetadata',() => { if (pendingPlayback) applyPlayback(pendingPlayback); });
+  $('guest-play-overlay').addEventListener('click', async () => { try { if (pendingPlayback) video.currentTime = Number(pendingPlayback.position) || 0; await video.play(); $('guest-play-overlay').classList.add('hidden'); } catch { toast('Safari nuk arriti të nisë videon. Provo përsëri.'); } });
   video.addEventListener('play',() => { $('play-toggle').textContent='Ⅱ'; if (!applyingRemote) sendPlayback('play'); });
   video.addEventListener('pause',() => { $('play-toggle').textContent='▶'; if (!applyingRemote && !video.ended) sendPlayback('pause'); });
   video.addEventListener('seeked',() => { if (!applyingRemote) sendPlayback('seek'); });

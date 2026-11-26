@@ -2,6 +2,7 @@
 
 const crypto = require('node:crypto');
 const http = require('node:http');
+const path = require('node:path');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -25,6 +26,7 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 app.use(express.json({ limit: '32kb' }));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 const server = http.createServer(app);
 const io = new Server(server, {

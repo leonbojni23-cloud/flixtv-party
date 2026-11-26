@@ -16,6 +16,7 @@
   let isHost = false;
   let userId = '';
   let applyingRemote = false;
+  let pendingPlayback = null;
   let toastTimer = null;
   let chatCount = 0;
   const video = $('party-video');
@@ -231,7 +232,8 @@
     if (video.paused) video.play().catch(() => toast('Prek përsëri Play për të nisur videon.'));
     else video.pause();
   });
-  video.addEventListener('loadedmetadata',() => { if (pendingPlayback) applyPlayback(pendingPlayback); });\n  video.addEventListener('play',() => { $('play-toggle').textContent='Ⅱ'; if (!applyingRemote) sendPlayback('play'); });
+  video.addEventListener('loadedmetadata',() => { if (pendingPlayback) applyPlayback(pendingPlayback); });
+  video.addEventListener('play',() => { $('play-toggle').textContent='Ⅱ'; if (!applyingRemote) sendPlayback('play'); });
   video.addEventListener('pause',() => { $('play-toggle').textContent='▶'; if (!applyingRemote && !video.ended) sendPlayback('pause'); });
   video.addEventListener('seeked',() => { if (!applyingRemote) sendPlayback('seek'); });
   video.addEventListener('timeupdate',() => {

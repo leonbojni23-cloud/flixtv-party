@@ -60,10 +60,37 @@ $('copy-code').addEventListener('click', async () => {
   catch { prompt('Kodi i ftesës:',code); }
 });
 $('new-room').addEventListener('click',()=>{if(socket)socket.disconnect();currentRoom=null;$('result').classList.add('hidden');$('create-card').classList.remove('hidden');$('create-form').reset();$('private-room').checked=true;showError('error','');});
+$('join-by-code').addEventListener('click', async () => {
+  showError('code-error', '');
+  $('code-status').textContent = '';
+  const button = $('join-by-code');
+  const username = $('code-username').value.trim();
+  const code = $('invite-code-input').value.trim().toUpperCase().replace(/\\s+/g, '');
+  if (!username) return showError('code-error', 'Shkruaj emrin tënd.');
+  if (!code) return showError('code-error', 'Shkruaj kodin e ftesës.');
+  button.disabled = true;
+  button.innerHTML = 'Duke kërkuar dhomën…';
+  try {
+    const response = await fetch('/api/rooms/by-code/' + encodeURIComponent(code));
+    const data = await response.json();
+    if (!response.ok) throw new Error(response.status === 404 ? 'Kodi nuk është i saktë ose dhoma ka skaduar.' : 'Nuk u gjet dhoma. Provo përsëri.');
+    $('code-status').textContent = 'Dhoma u gjet: ' + data.room.name + ' · ' + data.room.movie.title;
+    await connectToRoom({ roomId: data.room.id, username, inviteCode: code });
+    $('code-status').textContent = 'U bashkove me sukses në dhomën "' + data.room.name + '". Lidhja është aktive.';
+    button.textContent = 'U bashkove ✓';
+  } catch (error) {
+    showError('code-error', error.message || 'Nuk u arrit bashkimi në dhomë.');
+    button.disabled = false;
+    button.innerHTML = 'Bashkohu me kod <span>↗</span>';
+  }
+});
+$('invite-code-input').addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') $('join-by-code').click();
+});
 const params=new URLSearchParams(location.search);
 const roomId=params.get('room');
 if(roomId){
-  $('create-card').classList.add('hidden');$('join-card').classList.remove('hidden');
+  $('create-card').classList.add('hidden');$('join-code-card').classList.add('hidden');$('join-card').classList.remove('hidden');
   $('join-description').textContent='Dhoma: '+roomId+'. Vendos emrin dhe bashkohu.';
   $('join-button').addEventListener('click',async()=>{
     showError('join-error','');const button=$('join-button');const username=$('join-username').value.trim();

@@ -123,7 +123,7 @@
     }
     if (playback.status === 'playing') {
       const promise = video.play();
-      if (promise?.catch) promise.catch(() => toast('Prek Play në player për të lejuar nisjen e videos në iPhone.'));
+      if (promise?.catch) promise.catch(() => { if (!isHost) $('guest-play-overlay').classList.remove('hidden'); toast('Prek butonin në video për ta nisur në iPhone.'); });
     } else {
       video.pause();
     }

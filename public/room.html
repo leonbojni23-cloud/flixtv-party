@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="sq">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08080c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Watch Party · FLIXTV</title>
+  <link rel="stylesheet" href="/room.css">
+  <script src="/socket.io/socket.io.js" defer></script>
+  <script src="/room.js" defer></script>
+</head>
+<body>
+  <main class="room-app">
+    <header class="room-header">
+      <a class="brand" href="/">FLIX<span>TV</span><i> PARTY</i></a>
+      <div class="room-header-meta"><span class="live-dot"></span><span id="connection-label">DUKE U LIDHUR</span><span class="header-divider"></span><span id="member-count">1 person</span></div>
+      <button class="icon-button leave-button" id="leave-room" aria-label="Dil nga dhoma">×</button>
+    </header>
+
+    <div class="room-layout">
+      <section class="watch-column">
+        <div class="movie-heading">
+          <div class="movie-heading-copy"><span class="eyebrow">WATCHING TOGETHER</span><h1 id="movie-title">Po ngarkohet dhoma…</h1><p id="room-name">FLIXTV Watch Party</p></div>
+          <button class="invite-button" id="invite-button">Fto miqtë <span>↗</span></button>
+        </div>
+
+        <div class="player-frame" id="player-frame">
+          <video id="party-video" playsinline webkit-playsinline preload="metadata"></video>
+          <div class="player-empty" id="player-empty">
+            <div class="play-orb">▶</div>
+            <strong>Gati për filmin?</strong>
+            <span id="empty-description">Host-i duhet të vendosë burimin e videos.</span>
+            <button class="primary host-only hidden" id="add-source-empty">Vendos burimin e videos</button>
+          </div>
+          <div class="player-top-overlay"><span class="watching-pill"><i></i> WATCH PARTY</span><span id="sync-label">SINKRONIZUAR</span></div>
+          <div class="player-controls" id="player-controls">
+            <button class="control-button" id="play-toggle" aria-label="Luaj ose ndalo">▶</button>
+            <span class="time-label" id="current-time">00:00</span>
+            <input id="seek-bar" class="seek-bar" type="range" min="0" max="1000" value="0" aria-label="Pozicioni i videos">
+            <span class="time-label" id="duration">00:00</span>
+            <button class="control-button" id="fullscreen-button" aria-label="Fullscreen">⛶</button>
+          </div>
+          <div class="reaction-floats" id="reaction-floats" aria-hidden="true"></div>
+        </div>
+
+        <div class="under-player">
+          <div class="now-playing"><span class="avatar-stack" id="avatar-stack"></span><span id="watching-label">Duke pritur pjesëmarrësit…</span></div>
+          <div class="reaction-bar" aria-label="Reagime">
+            <button data-emoji="❤️">❤️</button><button data-emoji="😂">😂</button><button data-emoji="😮">😮</button><button data-emoji="👏">👏</button><button data-emoji="🔥">🔥</button><button data-emoji="🍿">🍿</button>
+          </div>
+        </div>
+
+        <section class="source-card host-only hidden" id="source-card">
+          <div><span class="eyebrow">VIDEO SOURCE</span><h2>Burimi i filmit</h2><p>Vendos linkun direkt të videos nga CineSRC (M3U8 ose MP4). Ai ndahet me të gjithë dhomën.</p></div>
+          <div class="source-form"><input id="source-url" type="url" inputmode="url" placeholder="https://…/master.m3u8" autocomplete="off"><button class="primary" id="save-source">Ngarko</button></div>
+          <p class="source-note" id="source-note">Përdor linkun e drejtpërdrejtë të videos, jo faqen e burimit.</p>
+        </section>
+        <button class="source-edit host-only hidden" id="edit-source">⚙ Ndrysho burimin e videos</button>
+      </section>
+
+      <aside class="side-panel" id="side-panel">
+        <div class="side-tabs"><button class="side-tab active" data-panel="chat-panel">Chat <span id="chat-count">0</span></button><button class="side-tab" data-panel="people-panel">Pjesëmarrësit <span id="people-count">1</span></button></div>
+        <section class="side-content active" id="chat-panel"><div class="chat-messages" id="chat-messages"><div class="chat-empty">Biseda fillon këtu. 🍿</div></div><form class="chat-form" id="chat-form"><input id="chat-input" maxlength="500" placeholder="Shkruaj një mesazh…" autocomplete="off"><button type="submit" aria-label="Dërgo">↑</button></form></section>
+        <section class="side-content" id="people-panel"><div class="people-list" id="people-list"></div><div class="people-footnote">Të gjithë shohin të njëjtin moment të filmit.</div></section>
+      </aside>
+    </div>
+    <nav class="mobile-room-nav"><button class="mobile-nav-button active" data-mobile-panel="chat-panel">Chat</button><button class="mobile-nav-button" data-mobile-panel="people-panel">Pjesëmarrësit</button><button class="mobile-nav-button" id="mobile-invite">Fto</button></nav>
+    <div class="mobile-sheet-backdrop" id="sheet-backdrop"></div>
+    <div class="toast" id="toast" role="status"></div>
+  </main>
+</body>
+</html>

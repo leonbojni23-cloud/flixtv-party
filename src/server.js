@@ -26,7 +26,8 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 app.use(express.json({ limit: '32kb' }));
-app.use(express.static(path.join(__dirname, '..', 'public')));\napp.get('/party/:id', (_req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'room.html')));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+app.get('/party/:id', (_req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'room.html')));
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -71,6 +72,7 @@ function roomSnapshot(room) {
     ...publicRoom(room),
     members: [...room.members.values()].map(({ userId, username, isHost, joinedAt }) => ({ userId, username, isHost, joinedAt })),
     playback: room.playback,
+    media: room.media,
     queue: room.queue,
     chat: room.chat.slice(-50),
   };
@@ -156,6 +158,7 @@ app.post('/api/rooms', (req, res) => {
     emptySince: null,
     members: new Map(),
     playback: { status: 'paused', position: 0, duration: 0, updatedAt: now(), updatedBy: null, revision: 0 },
+    media: null,
     queue: [],
     chat: [],
   };

@@ -112,10 +112,12 @@
     }
   }
   function applyPlayback(playback) {
-    if (!playback || !video.dataset.source) return;
+    if (!playback) return;
+    pendingPlayback = playback;
+    if (!video.dataset.source || video.readyState < 1) return;
     applyingRemote = true;
     const target = Number(playback.position) || 0;
-    if (Number.isFinite(video.duration) && Math.abs(video.currentTime - target) > 1.4) {
+    if (Math.abs(video.currentTime - target) > 1.4) {
       try { video.currentTime = target; } catch {}
     }
     if (playback.status === 'playing') {
@@ -229,7 +231,7 @@
     if (video.paused) video.play().catch(() => toast('Prek përsëri Play për të nisur videon.'));
     else video.pause();
   });
-  video.addEventListener('play',() => { $('play-toggle').textContent='Ⅱ'; if (!applyingRemote) sendPlayback('play'); });
+  video.addEventListener('loadedmetadata',() => { if (pendingPlayback) applyPlayback(pendingPlayback); });\n  video.addEventListener('play',() => { $('play-toggle').textContent='Ⅱ'; if (!applyingRemote) sendPlayback('play'); });
   video.addEventListener('pause',() => { $('play-toggle').textContent='▶'; if (!applyingRemote && !video.ended) sendPlayback('pause'); });
   video.addEventListener('seeked',() => { if (!applyingRemote) sendPlayback('seek'); });
   video.addEventListener('timeupdate',() => {

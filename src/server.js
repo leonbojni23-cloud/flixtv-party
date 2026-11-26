@@ -26,7 +26,7 @@ app.use(cors({
   methods: ['GET', 'POST'],
 }));
 app.use(express.json({ limit: '32kb' }));
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..', 'public')));\napp.get('/party/:id', (_req, res) => res.sendFile(path.join(__dirname, '..', 'public', 'room.html')));
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -232,6 +232,24 @@ io.on('connection', (socket) => {
     socket.to(room.id).emit('presence:joined', { userId, username, isHost: member.isHost });
     emitPresence(room);
     ack({ ok: true, userId, room: roomSnapshot(room) });
+  });
+
+  socket.on('media:set', (payload = {}, ack = () => {}) => {
+    const membership = socketMembership.get(socket.id);
+    const room = membership && rooms.get(membership.roomId);
+    const member = room?.members.get(membership?.userId);
+    if (!room || !member) return ack({ ok: false, error: 'NOT_IN_ROOM' });
+    if (!member.isHost) return ack({ ok: false, error: 'HOST_ONLY' });
+    const url = cleanText(payload.url, 2048);
+    let parsed;
+    try { parsed = new URL(url); } catch { return ack({ ok: false, error: 'INVALID_MEDIA_URL' }); }
+    if (parsed.protocol !== 'https:') return ack({ ok: false, error: 'HTTPS_REQUIRED' });
+    if (!/\\.(m3u8|mp4|webm)(?:$|\\?)/i.test(parsed.pathname + parsed.search)) {
+      return ack({ ok: false, error: 'UNSUPPORTED_MEDIA_FORMAT' });
+    }
+    room.media = { url, updatedAt: now(), updatedBy: member.userId };
+    io.to(room.id).emit('media:state', { media: room.media });
+    ack({ ok: true, media: room.media });
   });
 
   socket.on('playback:command', (payload = {}, ack = () => {}) => {
